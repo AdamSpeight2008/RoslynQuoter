@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CodeQuoter;
 
 [TestClass]
 public class Tests
@@ -397,7 +398,7 @@ namespace @N
 
     private void Test ( string sourceText, string expected, bool useDefaultFormatting = true )
     {
-        var quoter = new Quoter( useDefaultFormatting: useDefaultFormatting);
+        var quoter = new CodeQuoter.CodeQuoter( useDefaultFormatting: useDefaultFormatting);
         var actual = quoter.Quote(sourceText);
         Assert.AreEqual( expected, actual );
 
@@ -421,7 +422,7 @@ namespace @N
                 .ToFullString( );
         }
 
-        var quoter = new Quoter( useDefaultFormatting: useDefaultFormatting, removeRedundantModifyingCalls: removeRedundantCalls);
+        var quoter = new CodeQuoter.CodeQuoter( useDefaultFormatting: useDefaultFormatting, removeRedundantModifyingCalls: removeRedundantCalls);
         var generatedCode = quoter.Quote(sourceText);
 
         ////var evaluator = new Evaluator();

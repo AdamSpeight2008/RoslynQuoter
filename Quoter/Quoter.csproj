@@ -87,12 +87,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSQuoter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Quoter.cs" />
     <Compile Include="Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeQuoter\CodeQuoter.csproj">
+      <Project>{f2aa7ae0-1fb1-41f9-9e08-b0a0111d9cce}</Project>
+      <Name>CodeQuoter</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

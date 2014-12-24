@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.CodeAnalysis.CSharp;
+using CodeQuoter;
 
 namespace QuoterHost
 {
@@ -9,7 +10,7 @@ namespace QuoterHost
         {
             var sourceText = "class C{}";
             var sourceNode = CSharpSyntaxTree.ParseText(sourceText).GetRoot() as CSharpSyntaxNode;
-            var quoter = new Quoter( );
+            var quoter = new CodeQuoter.CodeQuoter( );
 
             var generatedCode = quoter.Quote(sourceNode);
 
