@@ -249,11 +249,6 @@ public class Quoter
         return new ApiCall( name, mName, args );
     }
 
-
-    private object GetLeadingTrivia  ( SyntaxToken value )  { return !value.HasLeadingTrivia  ? null : QuoteList(value.LeadingTrivia,  "LeadingTrivia");  }
-    private object GetTrailingTrivia ( SyntaxToken value )  { return !value.HasTrailingTrivia ? null : QuoteList(value.TrailingTrivia, "TrailingTrivia"); }
-    private object GetEmptyTrivia ( string parentPropertyName )  { return new ApiCall( parentPropertyName, "SyntaxFactory.TriviaList", arguments: null ); }
-
     private ApiCall QuoteTrivia ( SyntaxTrivia syntaxTrivia )
     {
         string factoryMethodName = "SyntaxFactory.Trivia";
@@ -286,6 +281,11 @@ public class Quoter
         return new ApiCall( null, factoryMethodName, ArgList.Create( argument ) );
     }
 
+
+
+    private object GetLeadingTrivia  ( SyntaxToken value )  { return !value.HasLeadingTrivia  ? null : QuoteList(value.LeadingTrivia,  "LeadingTrivia");  }
+    private object GetTrailingTrivia ( SyntaxToken value )  { return !value.HasTrailingTrivia ? null : QuoteList(value.TrailingTrivia, "TrailingTrivia"); }
+    private object GetEmptyTrivia ( string parentPropertyName )  { return new ApiCall( parentPropertyName, "SyntaxFactory.TriviaList", arguments: null ); }
 
     /// <summary>
     /// Escapes strings to be included within "" using C# escaping rules
@@ -377,17 +377,12 @@ public class Quoter
     }
 
 
-
-
     /// <summary>
     /// Flattens a tree of ApiCalls into a single string.
     /// </summary>
     private string Print ( ApiCall root )  { return  Print( root, new StringBuilder(), 0, OpenParenthesisOnNewLine, ClosingParenthesisOnNewLine ).ToString(); }
 
-    private static string PrintWithDefaultFormatting ( ApiCall root )
-    {
-       return  Print( root, new StringBuilder(), 0, openNewLine: false, closeNewLine: false ).ToString();
-    }
+    private static string PrintWithDefaultFormatting ( ApiCall root )  {  return  Print( root, new StringBuilder(), 0, openNewLine: false, closeNewLine: false ).ToString();  }
 
     private static StringBuilder Print ( ApiCall codeBlock, StringBuilder sb, int depth = 0,  bool openNewLine = false,  bool closeNewLine = false )
     {
