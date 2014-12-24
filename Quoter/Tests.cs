@@ -398,7 +398,7 @@ namespace @N
 
     private void Test ( string sourceText, string expected, bool useDefaultFormatting = true )
     {
-        var quoter = new CodeQuoter.CodeQuoter( useDefaultFormatting: useDefaultFormatting);
+        var quoter = new CodeQuoter.CSCodeQuoter( useDefaultFormatting: useDefaultFormatting);
         var actual = quoter.Quote(sourceText);
         Assert.AreEqual( expected, actual );
 
@@ -422,7 +422,7 @@ namespace @N
                 .ToFullString( );
         }
 
-        var quoter = new CodeQuoter.CodeQuoter( useDefaultFormatting: useDefaultFormatting, removeRedundantModifyingCalls: removeRedundantCalls);
+        var quoter = new CodeQuoter.CSCodeQuoter( useDefaultFormatting: useDefaultFormatting, removeRedundantModifyingCalls: removeRedundantCalls);
         var generatedCode = quoter.Quote(sourceText);
 
         ////var evaluator = new Evaluator();

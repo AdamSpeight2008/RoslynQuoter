@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6FCB47
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeQuoter", "..\CodeQuoter\CodeQuoter.csproj", "{F2AA7AE0-1FB1-41F9-9E08-B0A0111D9CCE}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "VBQuoter", "..\VBQuoter\VBQuoter.vbproj", "{1430735D-3D52-4589-A547-A2CC446F7506}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{F2AA7AE0-1FB1-41F9-9E08-B0A0111D9CCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2AA7AE0-1FB1-41F9-9E08-B0A0111D9CCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2AA7AE0-1FB1-41F9-9E08-B0A0111D9CCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1430735D-3D52-4589-A547-A2CC446F7506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1430735D-3D52-4589-A547-A2CC446F7506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1430735D-3D52-4589-A547-A2CC446F7506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1430735D-3D52-4589-A547-A2CC446F7506}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

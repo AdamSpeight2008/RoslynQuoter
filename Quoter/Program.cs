@@ -10,7 +10,7 @@ namespace QuoterHost
         {
             var sourceText = "class C{}";
             var sourceNode = CSharpSyntaxTree.ParseText(sourceText).GetRoot() as CSharpSyntaxNode;
-            var quoter = new CodeQuoter.CodeQuoter( );
+            var quoter = new CodeQuoter.CSCodeQuoter( );
 
             var generatedCode = quoter.Quote(sourceNode);
 

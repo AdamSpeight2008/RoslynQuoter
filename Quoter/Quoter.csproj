@@ -89,7 +89,6 @@
   <ItemGroup>
     <Compile Include="CSQuoter.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Quoter.cs" />
     <Compile Include="Tests.cs" />
   </ItemGroup>
   <ItemGroup>

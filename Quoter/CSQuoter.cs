@@ -11,12 +11,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodeQuoter
 {
-    public class CodeQuoter : BaseQuoter
+    public class CSCodeQuoter : BaseQuoter
     {
         CSPrinter _CSPrinter_ = default(CSPrinter); 
 
 
-        public CodeQuoter ( bool useDefaultFormatting = true, bool removeRedundantModifyingCalls = true )
+        public CSCodeQuoter ( bool useDefaultFormatting = true, bool removeRedundantModifyingCalls = true )
             : base( useDefaultFormatting, removeRedundantModifyingCalls )
         {
             _CSPrinter_ = new CSPrinter( );
@@ -145,8 +145,7 @@ namespace CodeQuoter
                 {
                     listType = "SyntaxNodeOrToken";
                     mName = "SyntaxFactory.SeparatedList";
-                    sourceList = ( (SyntaxNodeOrTokenList)
-                    syntaxList.GetType( ).GetMethod( "GetWithSeparators" ).Invoke( syntaxList, null ) ).Cast<object>( ).ToArray( );
+                    sourceList = ( (SyntaxNodeOrTokenList) syntaxList.GetType( ).GetMethod( "GetWithSeparators" ).Invoke( syntaxList, null ) ).Cast<object>( ).ToArray( );
                 }
                 mName += "<" + mType + ">";
             }
