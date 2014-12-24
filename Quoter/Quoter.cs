@@ -105,7 +105,7 @@ public class Quoter
         var factoryMethodCall = new MethodCall(factoryMethod.DeclaringType.Name + "." + factoryMethod.Name);
         var         codeBlock = new ApiCall(name, factoryMethodCall);
         APIList.AddFactoryMethodArguments( factoryMethod, factoryMethodCall, quotedPropertyValues );
-        AddModifyingCalls( node, codeBlock, quotedPropertyValues );
+        ApiCall.AddModifyingCalls( node, codeBlock, quotedPropertyValues );
         return codeBlock;
     }
 
@@ -287,14 +287,6 @@ public class Quoter
     }
 
 
-    ///// <summary>
-    ///// Helper to quickly create a list from one or several items
-    ///// </summary>
-    //private static List<object> CreateArgumentList ( params object [ ] args )
-    //{
-    //    return new List<object>( args );
-    //}
-
     /// <summary>
     /// Escapes strings to be included within "" using C# escaping rules
     /// </summary>
@@ -384,21 +376,6 @@ public class Quoter
         return candidates.First( m => m.GetParameters( ).Length == minParameterCount );
     }
 
-    /// <summary>
-    /// Adds information about subsequent modifying fluent interface style calls on an object (like
-    /// foo.With(...).With(...))
-    /// </summary>
-    private void AddModifyingCalls ( object treeElement, ApiCall apiCall, APIList values )
-    {
-        var methods = treeElement.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
-        foreach ( var value in values )
-        {
-            var methodName = "With" + ProperCase(value.Name);
-            if ( !methods.Any( m => m.Name == methodName ) ) throw new NotSupportedException( );
-            methodName = "." + methodName;
-            apiCall.AddModifyingCall( new MethodCall( methodName, ArgList.Create(value)));
-        }
-    }
 
 
 
@@ -409,54 +386,41 @@ public class Quoter
 
     private static string PrintWithDefaultFormatting ( ApiCall root )
     {
-       return  Print( root, new StringBuilder(), 0, openParenthesisOnNewLine: false, closingParenthesisOnNewLine: false ).ToString();
+       return  Print( root, new StringBuilder(), 0, openNewLine: false, closeNewLine: false ).ToString();
     }
 
-    private static StringBuilder Print ( ApiCall codeBlock, StringBuilder sb, int depth = 0,  bool openParenthesisOnNewLine = false,  bool closingParenthesisOnNewLine = false )
+    private static StringBuilder Print ( ApiCall codeBlock, StringBuilder sb, int depth = 0,  bool openNewLine = false,  bool closeNewLine = false )
     {
-        Print( codeBlock.FactoryMethodCall, sb, depth, useCurliesInsteadOfParentheses: codeBlock.UseCurliesInsteadOfParentheses,
-                                                             openParenthesisOnNewLine: openParenthesisOnNewLine,
-                                                          closingParenthesisOnNewLine: closingParenthesisOnNewLine );
+        Print( codeBlock.FactoryMethodCall, sb, depth, useCurly: codeBlock.useCurly, openNewLine: openNewLine, closeNewLine: closeNewLine );
         if ( codeBlock.InstanceMethodCalls == null ) return sb;
         foreach ( var call in codeBlock.InstanceMethodCalls )
         {
-          Print( call, PrintNewLine( sb ), depth, useCurliesInsteadOfParentheses: codeBlock.UseCurliesInsteadOfParentheses,
-                                                        openParenthesisOnNewLine: openParenthesisOnNewLine,
-                                                     closingParenthesisOnNewLine: closingParenthesisOnNewLine );
+          Print( call, PrintNewLine( sb ), depth, useCurly: codeBlock.useCurly, openNewLine: openNewLine, closeNewLine: closeNewLine );
         }
         return sb;
     }
 
-    private static StringBuilder Print ( MemberCall call, StringBuilder sb, int depth, bool       openParenthesisOnNewLine = false,
-                                                                                       bool    closingParenthesisOnNewLine = false,
-                                                                                       bool useCurliesInsteadOfParentheses = false )
+    private static StringBuilder Print ( MemberCall call, StringBuilder sb, int depth, bool  openNewLine = false, bool closeNewLine = false, bool useCurly = false )
     {
-        var openParen  = useCurliesInsteadOfParentheses ? "{" : "(";
-        var closeParen = useCurliesInsteadOfParentheses ? "}" : ")";
+        var openParen  = useCurly ? "{" : "(";
+        var closeParen = useCurly ? "}" : ")";
         Print( call.Name, sb, depth );
         MethodCall methodCall = call as MethodCall;
-        if ( methodCall != null )
+        if ( methodCall == null ) return sb;
+        if ( methodCall.Arguments == null || !methodCall.Arguments.Any( ) )   {  Print( openParen + closeParen, sb, 0 );  return sb;  }
+        sb =  openNewLine ?  Print( openParen,  PrintNewLine( sb ), depth ) :  Print( openParen, sb, 0 );
+        PrintNewLine( sb );
+        bool needComma = false;
+        foreach ( var block in methodCall.Arguments )
         {
-            if ( methodCall.Arguments == null || !methodCall.Arguments.Any( ) )   {  Print( openParen + closeParen, sb, 0 );  return sb;  }
-            if ( openParenthesisOnNewLine )      {  PrintNewLine( sb );  Print( openParen, sb, depth );  }
-            else                                 {  Print( openParen, sb, 0 );                           }
-            PrintNewLine( sb );
-            bool needComma = false;
-            foreach ( var block in methodCall.Arguments )
-            {
-                if ( needComma )                 {  Print( ",", sb, 0 );  PrintNewLine( sb );  }
-                if ( block is string )           {  Print( (string)block, sb, depth + 1 );     }
-                else if ( block is SyntaxKind )  {  Print( "SyntaxKind." + ( (SyntaxKind)block ).ToString( ), sb, depth + 1 );  }
-                else if ( block is ApiCall )     {  Print(  block as ApiCall, sb, depth + 1,
-                                                             openParenthesisOnNewLine: openParenthesisOnNewLine,
-                                                          closingParenthesisOnNewLine: closingParenthesisOnNewLine );
-                                                 }
-                needComma = true;
-            }
-            if ( closingParenthesisOnNewLine )   {  PrintNewLine( sb ); Print( closeParen, sb, depth ); }
-            else                                 {  Print( closeParen, sb, 0 );                         }
+            if ( needComma )                 {  Print( ",", sb, 0 );  PrintNewLine( sb );  }
+            if ( block is string )           {  Print( (string)block, sb, depth + 1 );     }
+            else if ( block is SyntaxKind )  {  Print( "SyntaxKind." + ( (SyntaxKind)block ).ToString( ), sb, depth + 1 );  }
+            else if ( block is ApiCall )     {  Print(  block as ApiCall, sb, depth + 1, openNewLine: openNewLine, closeNewLine: closeNewLine );
+                                             }
+            needComma = true;
         }
-        return sb;
+        return closeNewLine ?  Print( closeParen, PrintNewLine( sb ), depth ) : Print( closeParen, sb, 0 );
     }
 
     private static StringBuilder PrintNewLine ( StringBuilder sb )                             { return sb.AppendLine(); }
@@ -493,7 +457,7 @@ public class Quoter
         public string                          Name  { get; private set; }
         public MemberCall         FactoryMethodCall  { get; private set; }
         public List<MethodCall> InstanceMethodCalls  { get; private set; }
-        public bool  UseCurliesInsteadOfParentheses  { get; private set; }
+        public bool  useCurly  { get; private set; }
 
         public ApiCall ( string parentPropertyName ) { Name = parentPropertyName; }
 
@@ -504,7 +468,7 @@ public class Quoter
                          string  factoryMethodName,
                         ArgList          arguments,
                            bool useCurliesInsteadOfParentheses = false )  : this(parentPropertyName, new MethodCall( factoryMethodName, arguments ))
-          {  UseCurliesInsteadOfParentheses = useCurliesInsteadOfParentheses; }
+          {  useCurly = useCurliesInsteadOfParentheses; }
 
         public ApiCall ( string name, MethodCall factoryMethodCall ) : this(name)  {  FactoryMethodCall = factoryMethodCall; }
 
@@ -526,6 +490,23 @@ public class Quoter
             ////    }
             ////}
             this.Add( methodCall );
+        }
+
+
+        /// <summary>
+        /// Adds information about subsequent modifying fluent interface style calls on an object (like
+        /// foo.With(...).With(...))
+        /// </summary>
+        public static void AddModifyingCalls ( object treeElement, ApiCall apiCall, APIList values )
+        {
+            var methods = treeElement.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
+            foreach ( var value in values )
+            {
+                var methodName = "With" + ProperCase(value.Name);
+                if ( !methods.Any( m => m.Name == methodName ) ) throw new NotSupportedException( );
+                methodName = "." + methodName;
+                apiCall.AddModifyingCall( new MethodCall( methodName, ArgList.Create( value ) ) );
+            }
         }
     }
 
@@ -605,7 +586,6 @@ public class Quoter
                 }
             }
         }
-
 
     }
 
